@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valentine Minesweeper</title>
+
 <style>
   body {
     font-family: "Segoe UI", sans-serif;
@@ -13,17 +14,22 @@
     height: 100vh;
     background: #ffe6f0;
     flex-direction: column;
+    margin: 0;
   }
+
   h1 {
     color: #ff4d6d;
+    margin-bottom: 10px;
   }
+
   #game {
     display: grid;
     grid-template-columns: repeat(8, 50px);
     grid-template-rows: repeat(8, 50px);
-    gap: 5px;
-    margin-top: 20px;
+    gap: 6px;
+    margin-top: 10px;
   }
+
   .cell {
     width: 50px;
     height: 50px;
@@ -35,19 +41,24 @@
     cursor: pointer;
     border-radius: 8px;
     user-select: none;
+    transition: background 0.2s ease;
   }
+
   .cell.clicked {
     background: #ffd6e8;
     cursor: default;
   }
+
   #message {
     margin-top: 20px;
     font-size: 20px;
     color: #ff4d6d;
     font-weight: bold;
+    text-align: center;
   }
 </style>
 </head>
+
 <body>
 
 <h1>Valentine Minesweeper 💖</h1>
@@ -57,7 +68,8 @@
 <script>
 const rows = 8;
 const cols = 8;
-const totalMines = 10; // number of "heart mines"
+const totalMines = 10;
+
 let grid = [];
 let gameOver = false;
 let cellsClicked = 0;
@@ -65,27 +77,38 @@ let cellsClicked = 0;
 const gameContainer = document.getElementById("game");
 const message = document.getElementById("message");
 
-// Initialize grid
 function init() {
-  // create grid array
-  grid = Array(rows).fill().map(() => Array(cols).fill({mine: false, clicked: false}));
-  
-  // randomly place mines
+  gameContainer.innerHTML = "";
+  message.textContent = "";
+  gameOver = false;
+  cellsClicked = 0;
+
+  // Create grid with UNIQUE objects per cell
+  grid = [];
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+    for (let c = 0; c < cols; c++) {
+      row.push({ mine: false, clicked: false });
+    }
+    grid.push(row);
+  }
+
+  // Place mines
   let placed = 0;
-  while(placed < totalMines){
+  while (placed < totalMines) {
     const r = Math.floor(Math.random() * rows);
     const c = Math.floor(Math.random() * cols);
-    if(!grid[r][c].mine){
+    if (!grid[r][c].mine) {
       grid[r][c].mine = true;
       placed++;
     }
   }
-  
-  // create DOM cells
-  for(let r=0; r<rows; r++){
-    for(let c=0; c<cols; c++){
+
+  // Create cells
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       const cell = document.createElement("div");
-      cell.classList.add("cell");
+      cell.className = "cell";
       cell.dataset.row = r;
       cell.dataset.col = c;
       cell.addEventListener("click", clickCell);
@@ -94,41 +117,42 @@ function init() {
   }
 }
 
-function clickCell(e){
-  if(gameOver) return;
-  const r = parseInt(this.dataset.row);
-  const c = parseInt(this.dataset.col);
+function clickCell() {
+  if (gameOver) return;
+
+  const r = Number(this.dataset.row);
+  const c = Number(this.dataset.col);
   const cellData = grid[r][c];
-  
-  if(cellData.clicked) return;
-  
+
+  if (cellData.clicked) return;
+
   cellData.clicked = true;
   this.classList.add("clicked");
-  
-  if(cellData.mine){
-    this.innerText = "💖"; // heart mine
+
+  if (cellData.mine) {
+    this.textContent = "💖";
+    message.textContent = "Oops! You clicked a heart mine! 💔";
     gameOver = true;
-    message.innerText = "Oops! You clicked a heart mine! 💔";
     revealMines();
   } else {
-    this.innerText = "🌸"; // safe spot
+    this.textContent = "🌸";
     cellsClicked++;
-    if(cellsClicked === rows*cols - totalMines){
+
+    if (cellsClicked === rows * cols - totalMines) {
+      message.textContent = "Yay! You found all safe spots! Will you be my Valentine? 💌";
       gameOver = true;
-      message.innerText = "Yay! You found all safe spots! Will you be my Valentine? 💌";
       revealMines();
     }
   }
 }
 
-// reveal all mines at end
-function revealMines(){
+function revealMines() {
   const cells = document.querySelectorAll(".cell");
   cells.forEach(cell => {
-    const r = parseInt(cell.dataset.row);
-    const c = parseInt(cell.dataset.col);
-    if(grid[r][c].mine && !grid[r][c].clicked){
-      cell.innerText = "💖";
+    const r = Number(cell.dataset.row);
+    const c = Number(cell.dataset.col);
+    if (grid[r][c].mine) {
+      cell.textContent = "💖";
       cell.classList.add("clicked");
     }
   });
