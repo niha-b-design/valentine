@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Valentine Minesweeper</title>
+<title> Minesweeper </title>
 
 <style>
   body {
@@ -200,7 +200,7 @@ function startTeasing() {
       message.textContent =
         teasingLines[Math.floor(Math.random() * teasingLines.length)];
     }
-  }, 1000 + Math.random() * 1000);
+  }, 1000 + Math.random() * 2000);
 }
 
 function stopTeasing() {
@@ -248,8 +248,8 @@ function openCell(r, c) {
   el.classList.add("open");
 
   if (cell.mine) {
-    el.textContent = "💖";
-    message.textContent = "Boom 💔 Love hurts!";
+    el.textContent = "💔";
+    message.textContent = "Expert level player can't clear this one huhh? 😏";
     gameOver = true;
     stopTeasing();
     revealMines();
@@ -274,7 +274,7 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "You win 💌 Be my Valentine?";
+    message.textContent = "You win! Happy valentine's day! 😘";
     gameOver = true;
     stopTeasing();
     revealMines();
