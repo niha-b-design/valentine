@@ -209,7 +209,7 @@ function openCell(r, c) {
 
   if (cell.mine) {
     el.textContent = "💖";
-    message.textContent = "You clicked a heart mine 💔";
+    message.textContent = "Expert level player can't clear this one huh? 😏";
     gameOver = true;
     revealMines();
     return;
@@ -234,7 +234,7 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "You win 💌 Will you be my Valentine?";
+    message.textContent = "Yayy! Be my valentine 💐";
     gameOver = true;
     revealMines();
   }
