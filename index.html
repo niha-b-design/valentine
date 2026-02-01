@@ -195,19 +195,21 @@ function init() {
 }
 
 function startTeasing() {
+  // First tease comes fast
+  setTimeout(() => {
+    if (!gameOver) {
+      message.textContent =
+        teasingLines[Math.floor(Math.random() * teasingLines.length)];
+    }
+  }, 2000); // first tease after 2 seconds
+
+  // Then continue teasing fast
   teaseTimer = setInterval(() => {
     if (!gameOver) {
       message.textContent =
         teasingLines[Math.floor(Math.random() * teasingLines.length)];
     }
-  }, 3000 + Math.random() * 2000);
-}
-
-function stopTeasing() {
-  if (teaseTimer) {
-    clearInterval(teaseTimer);
-    teaseTimer = null;
-  }
+  }, 4000); // every 4 seconds
 }
 
 function updateMineCounter() {
@@ -249,7 +251,7 @@ function openCell(r, c) {
 
   if (cell.mine) {
     el.textContent = "💖";
-    message.textContent = "Boom 💔 Love hurts!";
+    message.textContent = "Expert level player can't clear this huhh? 😏";
     gameOver = true;
     stopTeasing();
     revealMines();
@@ -274,7 +276,7 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "You win 💌 Be my Valentine?";
+    message.textContent = "You win! Happy valentine!😘";
     gameOver = true;
     stopTeasing();
     revealMines();
