@@ -1,107 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Valentine?</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-      font-family: "Segoe UI", sans-serif;
-      overflow: hidden;
-    }
-
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 320px;
-      position: relative;
-    }
-
-    .teddy {
-      font-size: 90px;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    button {
-      margin: 10px;
-      padding: 10px 22px;
-      border: none;
-      border-radius: 25px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #yesBtn {
-      background: #ff4d6d;
-      color: white;
-    }
-
-    #noBtn {
-      background: #ddd;
-      position: absolute;
-    }
-
-    #response {
-      margin-top: 15px;
-      font-weight: bold;
-      color: #ff4d6d;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Minesweeper</title>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #ffe6f0;
+    flex-direction: column;
+  }
+  h1 {
+    color: #ff4d6d;
+  }
+  #game {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    gap: 5px;
+    margin-top: 20px;
+  }
+  .cell {
+    width: 50px;
+    height: 50px;
+    background: #fff0f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 8px;
+    user-select: none;
+  }
+  .cell.clicked {
+    background: #ffd6e8;
+    cursor: default;
+  }
+  #message {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #ff4d6d;
+    font-weight: bold;
+  }
+</style>
 </head>
-
 <body>
-  <div class="card">
-    <div class="teddy">🧸</div>
-    <p>Gotta ask a software engineer through online…</p>
-    <h2>Will you be my Valentine? 💖</h2>
 
-    <button id="yesBtn" onclick="yes()">YES 🥰</button>
-    <button id="noBtn" onmouseover="moveNo()">NO 🙄</button>
+<h1>Valentine Minesweeper 💖</h1>
+<div id="game"></div>
+<div id="message"></div>
 
-    <div id="response"></div>
-  </div>
+<script>
+const rows = 8;
+const cols = 8;
+const totalMines = 10; // number of "heart mines"
+let grid = [];
+let gameOver = false;
+let cellsClicked = 0;
 
-  <script>
-    let steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
-let i = 0;
-const response = document.getElementById("response");
-const interval = setInterval(() => {
-  response.innerText = steps[i++];
-  if (i === steps.length) clearInterval(interval);
-}, 700);
-    function yes() {
-      document.getElementById("response").innerText =
-        "Yayyy 💕 I knew it. Happy Valentine’s Day ❤️";
+const gameContainer = document.getElementById("game");
+const message = document.getElementById("message");
+
+// Initialize grid
+function init() {
+  // create grid array
+  grid = Array(rows).fill().map(() => Array(cols).fill({mine: false, clicked: false}));
+  
+  // randomly place mines
+  let placed = 0;
+  while(placed < totalMines){
+    const r = Math.floor(Math.random() * rows);
+    const c = Math.floor(Math.random() * cols);
+    if(!grid[r][c].mine){
+      grid[r][c].mine = true;
+      placed++;
     }
-
-    function moveNo() {
-      const noBtn = document.getElementById("noBtn");
-      const card = document.querySelector(".card");
-
-      const maxX = card.offsetWidth - noBtn.offsetWidth;
-      const maxY = card.offsetHeight - noBtn.offsetHeight;
-
-      const randomX = Math.random() * maxX;
-      const randomY = Math.random() * maxY;
-
-      noBtn.style.left = randomX + "px";
-      noBtn.style.top = randomY + "px";
+  }
+  
+  // create DOM cells
+  for(let r=0; r<rows; r++){
+    for(let c=0; c<cols; c++){
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.addEventListener("click", clickCell);
+      gameContainer.appendChild(cell);
     }
-  </script>
+  }
+}
+
+function clickCell(e){
+  if(gameOver) return;
+  const r = parseInt(this.dataset.row);
+  const c = parseInt(this.dataset.col);
+  const cellData = grid[r][c];
+  
+  if(cellData.clicked) return;
+  
+  cellData.clicked = true;
+  this.classList.add("clicked");
+  
+  if(cellData.mine){
+    this.innerText = "💖"; // heart mine
+    gameOver = true;
+    message.innerText = "Oops! You clicked a heart mine! 💔";
+    revealMines();
+  } else {
+    this.innerText = "🌸"; // safe spot
+    cellsClicked++;
+    if(cellsClicked === rows*cols - totalMines){
+      gameOver = true;
+      message.innerText = "Yay! You found all safe spots! Will you be my Valentine? 💌";
+      revealMines();
+    }
+  }
+}
+
+// reveal all mines at end
+function revealMines(){
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach(cell => {
+    const r = parseInt(cell.dataset.row);
+    const c = parseInt(cell.dataset.col);
+    if(grid[r][c].mine && !grid[r][c].clicked){
+      cell.innerText = "💖";
+      cell.classList.add("clicked");
+    }
+  });
+}
+
+init();
+</script>
+
 </body>
 </html>
