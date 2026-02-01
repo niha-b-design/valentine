@@ -23,9 +23,9 @@
 
   #top-bar {
     display: flex;
-    align-items: center;
     gap: 14px;
     margin-bottom: 8px;
+    align-items: center;
   }
 
   #mine-counter {
@@ -85,6 +85,10 @@
   .n2 { color: #388e3c; }
   .n3 { color: #d32f2f; }
   .n4 { color: #7b1fa2; }
+  .n5 { color: #c2185b; }
+  .n6 { color: #00796b; }
+  .n7 { color: #455a64; }
+  .n8 { color: #000; }
 
   #message {
     margin-top: 10px;
@@ -123,14 +127,15 @@ let gameOver = false;
 let opened = 0;
 let flagsUsed = 0;
 let teaseTimer = null;
+let gameStarted = false;
 
 const teasingLines = [
   "Tick-tock… love is waiting ⏳",
   "Taking your sweet time, huh? 😏",
-  "A heart mine is giggling 💖",
+  "A heart mine just giggled 💖",
   "Careful… one wrong click 😈",
-  "Still thinking? 💕",
-  "Love won’t wait forever 😉",
+  "Still thinking? Love won’t wait 💕",
+  "Bold move 😜",
   "The mines are watching 👀"
 ];
 
@@ -138,12 +143,11 @@ function init() {
   game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
+  gameStarted = false;
   opened = 0;
   flagsUsed = 0;
   updateMineCounter();
-
   stopTeasing();
-  startTeasing();
 
   grid = Array.from({ length: ROWS }, () =>
     Array.from({ length: COLS }, () => ({
@@ -190,16 +194,11 @@ function init() {
   }
 }
 
-function updateMineCounter() {
-  const remaining = Math.max(MINES - flagsUsed, 0);
-  mineCounter.textContent = `💣 ${remaining}`;
-}
-
 function startTeasing() {
   teaseTimer = setInterval(() => {
     if (!gameOver) {
-      const line = teasingLines[Math.floor(Math.random() * teasingLines.length)];
-      message.textContent = line;
+      message.textContent =
+        teasingLines[Math.floor(Math.random() * teasingLines.length)];
     }
   }, 9000 + Math.random() * 6000);
 }
@@ -209,6 +208,10 @@ function stopTeasing() {
     clearInterval(teaseTimer);
     teaseTimer = null;
   }
+}
+
+function updateMineCounter() {
+  mineCounter.textContent = `💣 ${Math.max(MINES - flagsUsed, 0)}`;
 }
 
 function countMines(r, c) {
@@ -229,6 +232,11 @@ function countMines(r, c) {
 
 function openCell(r, c) {
   if (gameOver) return;
+
+  if (!gameStarted) {
+    gameStarted = true;
+    startTeasing();
+  }
 
   const cell = grid[r][c];
   if (cell.open || cell.flag) return;
@@ -254,7 +262,6 @@ function openCell(r, c) {
   } else {
     el.innerHTML = "&nbsp;";
     el.classList.add("empty");
-
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
         const nr = r + dr;
