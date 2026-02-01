@@ -132,10 +132,10 @@
     box-shadow:0 10px 30px rgba(0,0,0,0.3);
   ">
     <h2 style="color:#ff4d6d;margin-bottom:18px;">
-      💖 What I feel right now 💖
+      You win! Happy Valentine's Day 😘
     </h2>
     <button onclick="openFeelingVideo()">
-      What I feel right now
+      Click here
     </button>
   </div>
 </div>
@@ -146,7 +146,7 @@ const COLS = 8;
 const MINES = 10;
 
 // 🔗 CHANGE THIS YOUTUBE LINK IF YOU WANT
-const FEELING_VIDEO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+const FEELING_VIDEO_URL = "https://youtu.be/7QF7z76ehyo?si=t3ns7W56TSjyNnnt&t=52";
 
 const game = document.getElementById("game");
 const message = document.getElementById("message");
@@ -317,7 +317,7 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "You win! Happy Valentine's Day 😘";
+    message.textContent = " ";
     gameOver = true;
     stopTeasing();
     revealMines();
