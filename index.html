@@ -200,7 +200,7 @@ function startTeasing() {
       message.textContent =
         teasingLines[Math.floor(Math.random() * teasingLines.length)];
     }
-  }, 1000 + Math.random() * 2000);
+  }, 1000 + Math.random() * 3000);
 }
 
 function stopTeasing() {
@@ -248,7 +248,7 @@ function openCell(r, c) {
   el.classList.add("open");
 
   if (cell.mine) {
-    el.textContent = "💔";
+    el.textContent = "💖";
     message.textContent = "Expert level player can't clear this one huhh? 😏";
     gameOver = true;
     stopTeasing();
@@ -308,7 +308,7 @@ function revealMines() {
     const r = el.dataset.r;
     const c = el.dataset.c;
     if (grid[r][c].mine) {
-      el.textContent = "💖";
+      el.textContent = "💔";
       el.classList.add("open");
     }
   });
