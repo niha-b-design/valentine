@@ -13,35 +13,46 @@
     justify-content: center;
     align-items: center;
     background: #ffe6f0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: system-ui, Arial, sans-serif;
   }
 
   h1 {
     color: #ff4d6d;
+    margin-bottom: 10px;
   }
 
   #game {
     display: grid;
-    grid-template-columns: repeat(8, 48px);
-    gap: 6px;
-    margin-top: 15px;
+    grid-template-columns: repeat(8, 42px);
+    gap: 4px;
   }
 
   .cell {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     background: #fff0f5;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    user-select: none;
   }
 
-  .cell.clicked {
+  .cell.open {
     background: #ffd6e8;
     cursor: default;
   }
 
+  .n1 { color: #1976d2; }
+  .n2 { color: #388e3c; }
+  .n3 { color: #d32f2f; }
+  .n4 { color: #7b1fa2; }
+
   #message {
-    margin-top: 16px;
+    margin-top: 14px;
     font-size: 18px;
     color: #ff4d6d;
     font-weight: bold;
@@ -51,7 +62,7 @@
 
 <body>
 
-<h1>Valentine Minesweeper</h1>
+<h1>Valentine Minesweeper 💖</h1>
 <div id="game"></div>
 <div id="message"></div>
 
@@ -65,17 +76,21 @@ const message = document.getElementById("message");
 
 let grid = [];
 let gameOver = false;
-let safe = 0;
+let opened = 0;
 
 function init() {
   game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
-  safe = 0;
+  opened = 0;
 
   // Create grid
   grid = Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({ mine: false, clicked: false }))
+    Array.from({ length: COLS }, () => ({
+      mine: false,
+      open: false,
+      count: 0
+    }))
   );
 
   // Place mines
@@ -89,54 +104,95 @@ function init() {
     }
   }
 
-  // Render cells
+  // Calculate numbers
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (grid[r][c].mine) continue;
+      grid[r][c].count = countMines(r, c);
+    }
+  }
+
+  // Render
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cell = document.createElement("div");
       cell.className = "cell";
       cell.dataset.r = r;
       cell.dataset.c = c;
-      cell.onclick = () => clickCell(cell);
+      cell.onclick = () => openCell(r, c, cell);
       game.appendChild(cell);
     }
   }
 }
 
-function clickCell(cell) {
-  if (gameOver) return;
-
-  const r = cell.dataset.r;
-  const c = cell.dataset.c;
-  const data = grid[r][c];
-
-  if (data.clicked) return;
-
-  data.clicked = true;
-  cell.classList.add("clicked");
-
-  if (data.mine) {
-    cell.textContent = "❤";
-    message.textContent = "Heart mine 💔";
-    gameOver = true;
-    reveal();
-  } else {
-    cell.textContent = "•";
-    safe++;
-    if (safe === ROWS * COLS - MINES) {
-      message.textContent = "You win 💌";
-      gameOver = true;
-      reveal();
+function countMines(r, c) {
+  let total = 0;
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (
+        nr >= 0 && nr < ROWS &&
+        nc >= 0 && nc < COLS &&
+        grid[nr][nc].mine
+      ) total++;
     }
+  }
+  return total;
+}
+
+function openCell(r, c, cellEl = null) {
+  if (gameOver) return;
+  const cell = grid[r][c];
+  if (cell.open) return;
+
+  cell.open = true;
+  opened++;
+
+  const el = cellEl || document.querySelector(
+    `.cell[data-r="${r}"][data-c="${c}"]`
+  );
+
+  el.classList.add("open");
+
+  if (cell.mine) {
+    el.textContent = "💖";
+    message.textContent = "You clicked a heart mine 💔";
+    gameOver = true;
+    revealMines();
+    return;
+  }
+
+  if (cell.count > 0) {
+    el.textContent = cell.count;
+    el.classList.add("n" + cell.count);
+  } else {
+    // Flood open
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+          openCell(nr, nc);
+        }
+      }
+    }
+  }
+
+  if (opened === ROWS * COLS - MINES) {
+    message.textContent = "You win 💌 Will you be my Valentine?";
+    gameOver = true;
+    revealMines();
   }
 }
 
-function reveal() {
-  document.querySelectorAll(".cell").forEach(cell => {
-    const r = cell.dataset.r;
-    const c = cell.dataset.c;
+function revealMines() {
+  document.querySelectorAll(".cell").forEach(el => {
+    const r = el.dataset.r;
+    const c = el.dataset.c;
     if (grid[r][c].mine) {
-      cell.textContent = "❤";
-      cell.classList.add("clicked");
+      el.textContent = "💖";
+      el.classList.add("open");
     }
   });
 }
