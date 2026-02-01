@@ -6,6 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    .teddy {
+      font-size: 40px;
+      animation: sway 3s ease-in-out infinite;
+    }
+
+    @keyframes sway {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(2deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .face {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .eye {
+      width: 8px;
+      height: 8px;
+      background: black;
+      border-radius: 50%;
+      animation: blink 4s infinite;
+    }
+
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      92%, 98% { transform: scaleY(0.1); }
+    }
+
+    .nose {
+      margin-left: 6px;
+      font-size: 14px;
+    }
     body {
       margin: 0;
       height: 100vh;
@@ -66,7 +102,14 @@
 
 <body>
   <div class="card">
-    <div class="teddy">🧸</div>
+    <div class="teddy">
+      <div class="ears">ʕ ʔ</div>
+      <div class="face">
+        <span class="eye left"></span>
+        <span class="eye right"></span>
+        <span class="nose">ʌ</span>
+      </div>
+  </div>
     <p>Gotta ask a software engineer through online…</p>
     <h2>Will you be my Valentine? 💖</h2>
 
