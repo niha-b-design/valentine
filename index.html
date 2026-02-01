@@ -134,24 +134,25 @@
 <script>
   // SHOW CARD AFTER FLOWERS
   setTimeout(() => {
-    document.getElementById("intro").style.display = "none";
-    document.querySelector(".card").style.display = "block";
-  }, 2500);
+    const card = document.querySelector(".card");
+    card.style.display = "block";
 
-  // LOADING ANIMATION
-  let steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
-  let i = 0;
-  const response = document.getElementById("response");
-  const interval = setInterval(() => {
-    response.innerText = steps[i++];
-    if(i === steps.length) clearInterval(interval);
-  }, 700);
+    // LOADING ANIMATION AFTER CARD VISIBLE
+    let steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
+    let i = 0;
+    const response = document.getElementById("response");
+
+    const interval = setInterval(() => {
+      response.innerText = steps[i++];
+      if (i === steps.length) clearInterval(interval);
+    }, 700);
+  }, 2500);
 
   // YES BUTTON
   function yes() {
     const teddy = document.querySelector(".teddy");
     teddy.style.animation = "sway 0.2s ease-in-out 3 alternate";
-    response.innerText = "Yayyy 💕 Best decision ever.";
+    document.getElementById("response").innerText = "Yayyy 💕 Best decision ever.";
     console.log("Compiling feelings...");
     console.log("Build successful ❤️");
     console.log("Output: Will you be my Valentine?");
@@ -167,7 +168,7 @@
     const maxY = card.offsetHeight - noBtn.offsetHeight;
     noBtn.style.left = Math.random() * maxX + "px";
     noBtn.style.top = Math.random() * maxY + "px";
-    response.innerText = Nice try 😌 Attempts: ${noCount};
+    document.getElementById("response").innerText = Nice try 😌 Attempts: ${noCount};
   }
 </script>
 </body>
