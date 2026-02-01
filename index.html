@@ -21,8 +21,19 @@
     margin-bottom: 6px;
   }
 
-  #controls {
-    margin-bottom: 10px;
+  #top-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+
+  #mine-counter {
+    background: #fff0f5;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #d32f2f;
   }
 
   button {
@@ -33,10 +44,6 @@
     color: white;
     font-size: 14px;
     cursor: pointer;
-  }
-
-  button:hover {
-    background: #e63956;
   }
 
   #game {
@@ -78,16 +85,14 @@
   .n2 { color: #388e3c; }
   .n3 { color: #d32f2f; }
   .n4 { color: #7b1fa2; }
-  .n5 { color: #c2185b; }
-  .n6 { color: #00796b; }
-  .n7 { color: #455a64; }
-  .n8 { color: #000; }
 
   #message {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 18px;
     color: #ff4d6d;
     font-weight: bold;
+    min-height: 22px;
+    text-align: center;
   }
 </style>
 </head>
@@ -96,7 +101,8 @@
 
 <h1>Valentine Minesweeper 💖</h1>
 
-<div id="controls">
+<div id="top-bar">
+  <div id="mine-counter">💣 10</div>
   <button onclick="init()">Restart</button>
 </div>
 
@@ -110,17 +116,34 @@ const MINES = 10;
 
 const game = document.getElementById("game");
 const message = document.getElementById("message");
+const mineCounter = document.getElementById("mine-counter");
 
 let grid = [];
 let gameOver = false;
 let opened = 0;
-let pressTimer = null;
+let flagsUsed = 0;
+let teaseTimer = null;
+
+const teasingLines = [
+  "Tick-tock… love is waiting ⏳",
+  "Taking your sweet time, huh? 😏",
+  "A heart mine is giggling 💖",
+  "Careful… one wrong click 😈",
+  "Still thinking? 💕",
+  "Love won’t wait forever 😉",
+  "The mines are watching 👀"
+];
 
 function init() {
   game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
   opened = 0;
+  flagsUsed = 0;
+  updateMineCounter();
+
+  stopTeasing();
+  startTeasing();
 
   grid = Array.from({ length: ROWS }, () =>
     Array.from({ length: COLS }, () => ({
@@ -131,7 +154,6 @@ function init() {
     }))
   );
 
-  // Place mines
   let placed = 0;
   while (placed < MINES) {
     const r = Math.floor(Math.random() * ROWS);
@@ -142,7 +164,6 @@ function init() {
     }
   }
 
-  // Calculate numbers
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (!grid[r][c].mine) {
@@ -151,7 +172,6 @@ function init() {
     }
   }
 
-  // Render grid
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cell = document.createElement("div");
@@ -159,23 +179,35 @@ function init() {
       cell.dataset.r = r;
       cell.dataset.c = c;
 
-      // Left click
       cell.onclick = () => openCell(r, c);
-
-      // Right click (flag)
       cell.oncontextmenu = e => {
         e.preventDefault();
         toggleFlag(r, c);
       };
 
-      // Long press (mobile flag)
-      cell.ontouchstart = () => {
-        pressTimer = setTimeout(() => toggleFlag(r, c), 500);
-      };
-      cell.ontouchend = () => clearTimeout(pressTimer);
-
       game.appendChild(cell);
     }
+  }
+}
+
+function updateMineCounter() {
+  const remaining = Math.max(MINES - flagsUsed, 0);
+  mineCounter.textContent = `💣 ${remaining}`;
+}
+
+function startTeasing() {
+  teaseTimer = setInterval(() => {
+    if (!gameOver) {
+      const line = teasingLines[Math.floor(Math.random() * teasingLines.length)];
+      message.textContent = line;
+    }
+  }, 9000 + Math.random() * 6000);
+}
+
+function stopTeasing() {
+  if (teaseTimer) {
+    clearInterval(teaseTimer);
+    teaseTimer = null;
   }
 }
 
@@ -209,8 +241,9 @@ function openCell(r, c) {
 
   if (cell.mine) {
     el.textContent = "💖";
-    message.textContent = "Expert level player can't clear this one huh? 😏";
+    message.textContent = "Boom 💔 Love hurts!";
     gameOver = true;
+    stopTeasing();
     revealMines();
     return;
   }
@@ -234,8 +267,9 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "Yayy! Be my valentine 💐";
+    message.textContent = "You win 💌 Be my Valentine?";
     gameOver = true;
+    stopTeasing();
     revealMines();
   }
 }
@@ -252,10 +286,14 @@ function toggleFlag(r, c) {
   if (cell.flag) {
     el.textContent = "🚩";
     el.classList.add("flag");
+    flagsUsed++;
   } else {
     el.textContent = "";
     el.classList.remove("flag");
+    flagsUsed--;
   }
+
+  updateMineCounter();
 }
 
 function revealMines() {
