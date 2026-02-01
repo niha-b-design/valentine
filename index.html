@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Valentine?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 320px;
+      position: relative;
+    }
+
+    .teddy {
+      font-size: 90px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    #noBtn {
+      background: #ddd;
+      position: absolute;
+    }
+
+    #response {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ff4d6d;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="teddy">🧸</div>
+    <p>Gotta ask a software engineer through online…</p>
+    <h2>Will you be my Valentine? 💖</h2>
+
+    <button id="yesBtn" onclick="yes()">YES 🥰</button>
+    <button id="noBtn" onmouseover="moveNo()">NO 🙄</button>
+
+    <div id="response"></div>
+  </div>
+
+  <script>
+    function yes() {
+      document.getElementById("response").innerText =
+        "Yayyy 💕 I knew it. Happy Valentine’s Day ❤️";
+    }
+
+    function moveNo() {
+      const noBtn = document.getElementById("noBtn");
+      const card = document.querySelector(".card");
+
+      const maxX = card.offsetWidth - noBtn.offsetWidth;
+      const maxY = card.offsetHeight - noBtn.offsetHeight;
+
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
+
+      noBtn.style.left = randomX + "px";
+      noBtn.style.top = randomY + "px";
+    }
+  </script>
+</body>
+</html>
