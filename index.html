@@ -46,6 +46,9 @@
     background: #ffd6e8;
     cursor: default;
   }
+  .cell.empty {
+  font-size: 0;
+}
 
   .n1 { color: #1976d2; }
   .n2 { color: #388e3c; }
@@ -174,17 +177,19 @@ function openCell(r, c) {
     el.textContent = cell.count.toString();
     el.classList.add("n" + cell.count);
   } else {
-    el.textContent = ""; // ← IMPORTANT FIX (no dot)
-    for (let dr = -1; dr <= 1; dr++) {
-      for (let dc = -1; dc <= 1; dc++) {
-        const nr = r + dr;
-        const nc = c + dc;
-        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
-          openCell(nr, nc);
-        }
+  el.innerHTML = "&nbsp;";
+  el.classList.add("empty");
+
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+        openCell(nr, nc);
       }
     }
   }
+}
 
   if (opened === ROWS * COLS - MINES) {
     message.textContent = "You win 💌 Will you be my Valentine?";
