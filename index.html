@@ -1,122 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Valentine</title>
+  <meta charset="UTF-8" />
+  <title>Valentine?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    font-family: "Segoe UI", sans-serif;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-  }
+  <style>
+    .teddy {
+      font-size: 40px;
+      animation: sway 3s ease-in-out infinite;
+    }
 
-  /* FLOWERS INTRO */
-  #intro {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, #ffe6f0, #ffd6e8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    animation: slideAway 2.5s forwards;
-    z-index: 10;
-  }
+    @keyframes sway {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(2deg); }
+      100% { transform: rotate(0deg); }
+    }
 
-  @keyframes slideAway {
-    0% { transform: translateY(0); opacity: 1; }
-    70% { transform: translateY(-100%); opacity: 1; }
-    100% { transform: translateY(-100%); opacity: 0; }
-  }
+    .face {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
 
-  /* CARD hidden visually but exists in DOM */
-  .card {
-    opacity: 0;
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    max-width: 320px;
-    position: relative;
-    transition: opacity 0.5s ease;
-  }
+    .eye {
+      width: 8px;
+      height: 8px;
+      background: black;
+      border-radius: 50%;
+      animation: blink 4s infinite;
+    }
 
-  /* TEDDY ANIMATION */
-  .teddy-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      92%, 98% { transform: scaleY(0.1); }
+    }
 
-  .teddy {
-    transform-origin: 50% 50%;
-    animation: sway 3s ease-in-out infinite;
-  }
+    .nose {
+      margin-left: 6px;
+      font-size: 14px;
+    }
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
 
-  @keyframes sway {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(3deg); }
-    50% { transform: rotate(0deg); }
-    75% { transform: rotate(-3deg); }
-    100% { transform: rotate(0deg); }
-  }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 320px;
+      position: relative;
+    }
 
-  .eye {
-    transform-origin: center;
-    animation: blink 4s infinite;
-  }
+    .teddy {
+      font-size: 90px;
+      animation: bounce 2s infinite;
+    }
 
-  @keyframes blink {
-    0%, 90%, 100% { transform: scaleY(1); }
-    92%, 98% { transform: scaleY(0.1); }
-  }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
 
-  button {
-    margin: 10px;
-    padding: 10px 22px;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-  }
+    button {
+      margin: 10px;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-  #yesBtn { background: #ff4d6d; color: white; }
-  #noBtn { background: #ddd; position: absolute; }
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+    }
 
-  #response {
-    margin-top: 15px;
-    font-weight: bold;
-    color: #ff4d6d;
-  }
-</style>
+    #noBtn {
+      background: #ddd;
+      position: absolute;
+    }
+
+    #response {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ff4d6d;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- FLOWERS INTRO -->
-  <div id="intro">🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸</div>
-
-  <!-- CARD (exists immediately but hidden with opacity) -->
-  <div class="card" id="card">
-    <div class="teddy-container">
-      <svg class="teddy" width="100" height="100" viewBox="0 0 100 100">
-        <circle cx="25" cy="20" r="10" fill="#A0522D"/>
-        <circle cx="75" cy="20" r="10" fill="#A0522D"/>
-        <circle cx="50" cy="50" r="25" fill="#D2691E"/>
-        <circle class="eye" cx="40" cy="45" r="4" fill="#000"/>
-        <circle class="eye" cx="60" cy="45" r="4" fill="#000"/>
-        <circle cx="50" cy="55" r="3" fill="#000"/>
-        <path d="M40 60 Q50 70 60 60" stroke="#000" stroke-width="2" fill="transparent"/>
-      </svg>
-    </div>
-
+  <div class="card">
+    <div class="teddy">
+      <div class="ears">ʕ ʔ</div>
+      <div class="face">
+        <span class="eye left"></span>
+        <span class="eye right"></span>
+        <span class="nose">ʌ</span>
+      </div>
+  </div>
     <p>Gotta ask a software engineer through online…</p>
     <h2>Will you be my Valentine? 💖</h2>
 
@@ -126,46 +119,32 @@
     <div id="response"></div>
   </div>
 
-<script>
-  // Show card AFTER flowers slide away
-  setTimeout(() => {
-    const card = document.getElementById("card");
-    card.style.opacity = "1"; // fade in
+  <script>
+    let steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
+let i = 0;
+const response = document.getElementById("response");
+const interval = setInterval(() => {
+  response.innerText = steps[i++];
+  if (i === steps.length) clearInterval(interval);
+}, 700);
+    function yes() {
+      document.getElementById("response").innerText =
+        "Yayyy 💕 I knew it. Happy Valentine’s Day ❤️";
+    }
 
-    // LOADING ANIMATION inside card
-    const response = document.getElementById("response");
-    const steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
-    let i = 0;
+    function moveNo() {
+      const noBtn = document.getElementById("noBtn");
+      const card = document.querySelector(".card");
 
-    const interval = setInterval(() => {
-      response.innerText = steps[i++];
-      if(i === steps.length) clearInterval(interval);
-    }, 700);
+      const maxX = card.offsetWidth - noBtn.offsetWidth;
+      const maxY = card.offsetHeight - noBtn.offsetHeight;
 
-  }, 2500); // matches flower slide animation
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
 
-  // YES button
-  function yes() {
-    const teddy = document.querySelector(".teddy");
-    teddy.style.animation = "sway 0.2s ease-in-out 3 alternate";
-    document.getElementById("response").innerText = "Yayyy 💕 Best decision ever.";
-    console.log("Compiling feelings...");
-    console.log("Build successful ❤️");
-    console.log("Output: Will you be my Valentine?");
-  }
-
-  // NO button
-  let noCount = 0;
-  function moveNo() {
-    noCount++;
-    const noBtn = document.getElementById("noBtn");
-    const card = document.getElementById("card");
-    const maxX = card.offsetWidth - noBtn.offsetWidth;
-    const maxY = card.offsetHeight - noBtn.offsetHeight;
-    noBtn.style.left = Math.random() * maxX + "px";
-    noBtn.style.top = Math.random() * maxY + "px";
-    document.getElementById("response").innerText = Nice try 😌 Attempts: ${noCount};
-  }
-</script>
+      noBtn.style.left = randomX + "px";
+      noBtn.style.top = randomY + "px";
+    }
+  </script>
 </body>
 </html>
