@@ -13,7 +13,7 @@
     justify-content: center;
     align-items: center;
     background: #ffe6f0;
-    font-family: Arial, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   h1 {
@@ -22,31 +22,26 @@
 
   #game {
     display: grid;
-    grid-template-columns: repeat(8, 50px);
+    grid-template-columns: repeat(8, 48px);
     gap: 6px;
     margin-top: 15px;
   }
 
   .cell {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     background: #fff0f5;
     border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
     cursor: pointer;
-    user-select: none;
   }
 
-  .clicked {
+  .cell.clicked {
     background: #ffd6e8;
     cursor: default;
   }
 
   #message {
-    margin-top: 15px;
+    margin-top: 16px;
     font-size: 18px;
     color: #ff4d6d;
     font-weight: bold;
@@ -56,7 +51,7 @@
 
 <body>
 
-<h1>Valentine Minesweeper 💖</h1>
+<h1>Valentine Minesweeper</h1>
 <div id="game"></div>
 <div id="message"></div>
 
@@ -70,89 +65,83 @@ const message = document.getElementById("message");
 
 let grid = [];
 let gameOver = false;
-let safeClicks = 0;
+let safe = 0;
 
-function startGame() {
+function init() {
   game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
-  safeClicks = 0;
+  safe = 0;
 
   // Create grid
-  grid = [];
-  for (let r = 0; r < ROWS; r++) {
-    grid[r] = [];
-    for (let c = 0; c < COLS; c++) {
-      grid[r][c] = { mine: false, clicked: false };
-    }
-  }
+  grid = Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => ({ mine: false, clicked: false }))
+  );
 
   // Place mines
   let placed = 0;
   while (placed < MINES) {
-    let r = Math.floor(Math.random() * ROWS);
-    let c = Math.floor(Math.random() * COLS);
+    const r = Math.floor(Math.random() * ROWS);
+    const c = Math.floor(Math.random() * COLS);
     if (!grid[r][c].mine) {
       grid[r][c].mine = true;
       placed++;
     }
   }
 
-  // Create cells
+  // Render cells
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cell = document.createElement("div");
       cell.className = "cell";
       cell.dataset.r = r;
       cell.dataset.c = c;
-
-      cell.onclick = () => handleClick(cell);
-
+      cell.onclick = () => clickCell(cell);
       game.appendChild(cell);
     }
   }
 }
 
-function handleClick(cell) {
+function clickCell(cell) {
   if (gameOver) return;
 
   const r = cell.dataset.r;
   const c = cell.dataset.c;
+  const data = grid[r][c];
 
-  if (grid[r][c].clicked) return;
+  if (data.clicked) return;
 
-  grid[r][c].clicked = true;
+  data.clicked = true;
   cell.classList.add("clicked");
 
-  if (grid[r][c].mine) {
-    cell.textContent = "💖";
-    message.textContent = "Boom! Heart mine 💔";
+  if (data.mine) {
+    cell.textContent = "❤";
+    message.textContent = "Heart mine 💔";
     gameOver = true;
-    revealMines();
+    reveal();
   } else {
-    cell.textContent = "🌸";
-    safeClicks++;
-
-    if (safeClicks === ROWS * COLS - MINES) {
-      message.textContent = "You win! Be my Valentine 💌";
+    cell.textContent = "•";
+    safe++;
+    if (safe === ROWS * COLS - MINES) {
+      message.textContent = "You win 💌";
       gameOver = true;
-      revealMines();
+      reveal();
     }
   }
 }
 
-function revealMines() {
+function reveal() {
   document.querySelectorAll(".cell").forEach(cell => {
     const r = cell.dataset.r;
     const c = cell.dataset.c;
     if (grid[r][c].mine) {
-      cell.textContent = "💖";
+      cell.textContent = "❤";
       cell.classList.add("clicked");
     }
   });
 }
 
-startGame();
+init();
 </script>
 
 </body>
