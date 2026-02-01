@@ -2,59 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valentine Minesweeper</title>
 
 <style>
   body {
-    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     background: #ffe6f0;
-    flex-direction: column;
-    margin: 0;
+    font-family: Arial, sans-serif;
   }
 
   h1 {
     color: #ff4d6d;
-    margin-bottom: 10px;
   }
 
   #game {
     display: grid;
     grid-template-columns: repeat(8, 50px);
-    grid-template-rows: repeat(8, 50px);
     gap: 6px;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .cell {
     width: 50px;
     height: 50px;
     background: #fff0f5;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 24px;
     cursor: pointer;
-    border-radius: 8px;
     user-select: none;
-    transition: background 0.2s ease;
   }
 
-  .cell.clicked {
+  .clicked {
     background: #ffd6e8;
     cursor: default;
   }
 
   #message {
-    margin-top: 20px;
-    font-size: 20px;
+    margin-top: 15px;
+    font-size: 18px;
     color: #ff4d6d;
     font-weight: bold;
-    text-align: center;
   }
 </style>
 </head>
@@ -66,38 +61,37 @@
 <div id="message"></div>
 
 <script>
-const rows = 8;
-const cols = 8;
-const totalMines = 10;
+const ROWS = 8;
+const COLS = 8;
+const MINES = 10;
+
+const game = document.getElementById("game");
+const message = document.getElementById("message");
 
 let grid = [];
 let gameOver = false;
-let cellsClicked = 0;
+let safeClicks = 0;
 
-const gameContainer = document.getElementById("game");
-const message = document.getElementById("message");
-
-function init() {
-  gameContainer.innerHTML = "";
+function startGame() {
+  game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
-  cellsClicked = 0;
+  safeClicks = 0;
 
-  // Create grid with UNIQUE objects per cell
+  // Create grid
   grid = [];
-  for (let r = 0; r < rows; r++) {
-    const row = [];
-    for (let c = 0; c < cols; c++) {
-      row.push({ mine: false, clicked: false });
+  for (let r = 0; r < ROWS; r++) {
+    grid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      grid[r][c] = { mine: false, clicked: false };
     }
-    grid.push(row);
   }
 
   // Place mines
   let placed = 0;
-  while (placed < totalMines) {
-    const r = Math.floor(Math.random() * rows);
-    const c = Math.floor(Math.random() * cols);
+  while (placed < MINES) {
+    let r = Math.floor(Math.random() * ROWS);
+    let c = Math.floor(Math.random() * COLS);
     if (!grid[r][c].mine) {
       grid[r][c].mine = true;
       placed++;
@@ -105,41 +99,42 @@ function init() {
   }
 
   // Create cells
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.dataset.row = r;
-      cell.dataset.col = c;
-      cell.addEventListener("click", clickCell);
-      gameContainer.appendChild(cell);
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+
+      cell.onclick = () => handleClick(cell);
+
+      game.appendChild(cell);
     }
   }
 }
 
-function clickCell() {
+function handleClick(cell) {
   if (gameOver) return;
 
-  const r = Number(this.dataset.row);
-  const c = Number(this.dataset.col);
-  const cellData = grid[r][c];
+  const r = cell.dataset.r;
+  const c = cell.dataset.c;
 
-  if (cellData.clicked) return;
+  if (grid[r][c].clicked) return;
 
-  cellData.clicked = true;
-  this.classList.add("clicked");
+  grid[r][c].clicked = true;
+  cell.classList.add("clicked");
 
-  if (cellData.mine) {
-    this.textContent = "💖";
-    message.textContent = "Oops! You clicked a heart mine! 💔";
+  if (grid[r][c].mine) {
+    cell.textContent = "💖";
+    message.textContent = "Boom! Heart mine 💔";
     gameOver = true;
     revealMines();
   } else {
-    this.textContent = "🌸";
-    cellsClicked++;
+    cell.textContent = "🌸";
+    safeClicks++;
 
-    if (cellsClicked === rows * cols - totalMines) {
-      message.textContent = "Yay! You found all safe spots! Will you be my Valentine? 💌";
+    if (safeClicks === ROWS * COLS - MINES) {
+      message.textContent = "You win! Be my Valentine 💌";
       gameOver = true;
       revealMines();
     }
@@ -147,10 +142,9 @@ function clickCell() {
 }
 
 function revealMines() {
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach(cell => {
-    const r = Number(cell.dataset.row);
-    const c = Number(cell.dataset.col);
+  document.querySelectorAll(".cell").forEach(cell => {
+    const r = cell.dataset.r;
+    const c = cell.dataset.c;
     if (grid[r][c].mine) {
       cell.textContent = "💖";
       cell.classList.add("clicked");
@@ -158,7 +152,7 @@ function revealMines() {
   });
 }
 
-init();
+startGame();
 </script>
 
 </body>
