@@ -77,6 +77,13 @@
   </div>
 
   <script>
+    let steps = ["Initializing feelings…", "Loading courage…", "Almost there…"];
+let i = 0;
+const response = document.getElementById("response");
+const interval = setInterval(() => {
+  response.innerText = steps[i++];
+  if (i === steps.length) clearInterval(interval);
+}, 700);
     function yes() {
       document.getElementById("response").innerText =
         "Yayyy 💕 I knew it. Happy Valentine’s Day ❤️";
