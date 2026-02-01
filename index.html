@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title> Minesweeper </title>
+<title>Minesweeper</title>
 
 <style>
   body {
@@ -113,10 +113,40 @@
 <div id="game"></div>
 <div id="message"></div>
 
+<!-- WIN POPUP -->
+<div id="win-popup" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+">
+  <div style="
+    background:#fff0f5;
+    padding:26px 30px;
+    border-radius:14px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  ">
+    <h2 style="color:#ff4d6d;margin-bottom:18px;">
+      💖 What I feel right now 💖
+    </h2>
+    <button onclick="openFeelingVideo()">
+      What I feel right now
+    </button>
+  </div>
+</div>
+
 <script>
 const ROWS = 8;
 const COLS = 8;
 const MINES = 10;
+
+// 🔗 CHANGE THIS YOUTUBE LINK IF YOU WANT
+const FEELING_VIDEO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 const game = document.getElementById("game");
 const message = document.getElementById("message");
@@ -139,7 +169,20 @@ const teasingLines = [
   "The mines are watching 👀"
 ];
 
+function showWinPopup() {
+  document.getElementById("win-popup").style.display = "flex";
+}
+
+function hideWinPopup() {
+  document.getElementById("win-popup").style.display = "none";
+}
+
+function openFeelingVideo() {
+  window.open(FEELING_VIDEO_URL, "_blank");
+}
+
 function init() {
+  hideWinPopup();
   game.innerHTML = "";
   message.textContent = "";
   gameOver = false;
@@ -274,10 +317,11 @@ function openCell(r, c) {
   }
 
   if (opened === ROWS * COLS - MINES) {
-    message.textContent = "You win! Happy valentine's day! 😘";
+    message.textContent = "You win! Happy Valentine's Day 😘";
     gameOver = true;
     stopTeasing();
     revealMines();
+    showWinPopup();
   }
 }
 
