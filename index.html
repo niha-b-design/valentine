@@ -18,7 +18,25 @@
 
   h1 {
     color: #ff4d6d;
+    margin-bottom: 6px;
+  }
+
+  #controls {
     margin-bottom: 10px;
+  }
+
+  button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #ff4d6d;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #e63956;
   }
 
   #game {
@@ -46,9 +64,15 @@
     background: #ffd6e8;
     cursor: default;
   }
+
+  .cell.flag {
+    color: #d32f2f;
+    font-size: 20px;
+  }
+
   .cell.empty {
-  font-size: 0;
-}
+    font-size: 0;
+  }
 
   .n1 { color: #1976d2; }
   .n2 { color: #388e3c; }
@@ -60,7 +84,7 @@
   .n8 { color: #000; }
 
   #message {
-    margin-top: 14px;
+    margin-top: 12px;
     font-size: 18px;
     color: #ff4d6d;
     font-weight: bold;
@@ -71,6 +95,11 @@
 <body>
 
 <h1>Valentine Minesweeper 💖</h1>
+
+<div id="controls">
+  <button onclick="init()">Restart</button>
+</div>
+
 <div id="game"></div>
 <div id="message"></div>
 
@@ -85,6 +114,7 @@ const message = document.getElementById("message");
 let grid = [];
 let gameOver = false;
 let opened = 0;
+let pressTimer = null;
 
 function init() {
   game.innerHTML = "";
@@ -96,6 +126,7 @@ function init() {
     Array.from({ length: COLS }, () => ({
       mine: false,
       open: false,
+      flag: false,
       count: 0
     }))
   );
@@ -127,7 +158,22 @@ function init() {
       cell.className = "cell";
       cell.dataset.r = r;
       cell.dataset.c = c;
+
+      // Left click
       cell.onclick = () => openCell(r, c);
+
+      // Right click (flag)
+      cell.oncontextmenu = e => {
+        e.preventDefault();
+        toggleFlag(r, c);
+      };
+
+      // Long press (mobile flag)
+      cell.ontouchstart = () => {
+        pressTimer = setTimeout(() => toggleFlag(r, c), 500);
+      };
+      cell.ontouchend = () => clearTimeout(pressTimer);
+
       game.appendChild(cell);
     }
   }
@@ -143,9 +189,7 @@ function countMines(r, c) {
         nr >= 0 && nr < ROWS &&
         nc >= 0 && nc < COLS &&
         grid[nr][nc].mine
-      ) {
-        total++;
-      }
+      ) total++;
     }
   }
   return total;
@@ -155,14 +199,12 @@ function openCell(r, c) {
   if (gameOver) return;
 
   const cell = grid[r][c];
-  if (cell.open) return;
+  if (cell.open || cell.flag) return;
 
   cell.open = true;
   opened++;
 
-  const el = document.querySelector(
-    `.cell[data-r="${r}"][data-c="${c}"]`
-  );
+  const el = getCellEl(r, c);
   el.classList.add("open");
 
   if (cell.mine) {
@@ -174,27 +216,45 @@ function openCell(r, c) {
   }
 
   if (cell.count > 0) {
-    el.textContent = cell.count.toString();
+    el.textContent = cell.count;
     el.classList.add("n" + cell.count);
   } else {
-  el.innerHTML = "&nbsp;";
-  el.classList.add("empty");
+    el.innerHTML = "&nbsp;";
+    el.classList.add("empty");
 
-  for (let dr = -1; dr <= 1; dr++) {
-    for (let dc = -1; dc <= 1; dc++) {
-      const nr = r + dr;
-      const nc = c + dc;
-      if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
-        openCell(nr, nc);
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+          openCell(nr, nc);
+        }
       }
     }
   }
-}
 
   if (opened === ROWS * COLS - MINES) {
     message.textContent = "You win 💌 Will you be my Valentine?";
     gameOver = true;
     revealMines();
+  }
+}
+
+function toggleFlag(r, c) {
+  if (gameOver) return;
+
+  const cell = grid[r][c];
+  if (cell.open) return;
+
+  cell.flag = !cell.flag;
+  const el = getCellEl(r, c);
+
+  if (cell.flag) {
+    el.textContent = "🚩";
+    el.classList.add("flag");
+  } else {
+    el.textContent = "";
+    el.classList.remove("flag");
   }
 }
 
@@ -207,6 +267,10 @@ function revealMines() {
       el.classList.add("open");
     }
   });
+}
+
+function getCellEl(r, c) {
+  return document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
 }
 
 init();
